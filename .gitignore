@@ -1,0 +1,84 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+
+# ===================================================================
+# File .gitignore cơ bản cho macOS, Windows, Linux
+# và các IDE: VSCode, IntelliJ
+# ===================================================================
+
+# 1. Hệ điều hành (OS-specific)
+# -------------------------------------------------------------------
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+### Linux ###
+*~
+.*.swp
+
+# 2. IDE & Trình chỉnh sửa (Editors)
+# -------------------------------------------------------------------
+
+### IntelliJ (JetBrains) ###
+# Thư mục cấu hình riêng tư của người dùng
+/.idea/
+# Các file module
+*.iml
+*.ipr
+*.iws
+# Thư mục build mặc định
+out/
+
+### Visual Studio Code (VSCode) ###
+# Bỏ qua tất cả mọi thứ trong .vscode, NGOẠI TRỪ
+# các file cấu hình chung của dự án.
+# Điều này giúp chia sẻ cài đặt linter, gỡ lỗi (debug)
+# mà không làm lộ cài đặt cá nhân.
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+
+# File workspace cá nhân
+*.code-workspace
+
+# 3. Tệp dự án chung (Common Project Files)
+# -------------------------------------------------------------------
+
+### Dependencies ###
+# Thư mục cài đặt thư viện (ví dụ: npm, yarn, bower)
+/node_modules/
+/bower_components/
+
+### Build Output ###
+# Các thư mục build/dist thông dụng
+/build/
+/dist/
+/target/
+/bin/
+/obj/
+
+### Logs ###
+# Bỏ qua file log
+*.log
+logs/
+*.logs
+
+### Secrets (Rất quan trọng!) ###
+# Không bao giờ commit các file chứa mật khẩu, API keys...
+.env
+.env.*
+!*.env.example
+!*.env.sample
