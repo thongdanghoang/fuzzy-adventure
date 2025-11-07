@@ -39,6 +39,7 @@ $RECYCLE.BIN/
 *.iws
 # Thư mục build mặc định
 out/
+/.run/
 
 ### Visual Studio Code (VSCode) ###
 # Bỏ qua tất cả mọi thứ trong .vscode, NGOẠI TRỪ
