@@ -6,10 +6,7 @@ helm repo update
 helm install jenkins jenkins/jenkins -f values.yaml -n jenkins --create-namespace
 ```
 ```bash
-kubectl --namespace jenkins get secret my-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
-```
-```bash
-kubectl exec --namespace default -it svc/jenkins -c jenkins -- /bin/cat /var/jenkins_home/secrets/initialAdminPassword && echo
+kubectl --namespace jenkins get secret jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
 ```
 ```bash
 helm uninstall jenkins jenkins/jenkins

@@ -1,5 +1,8 @@
 ```bash
 helm repo add harbor https://helm.goharbor.io
+helm update
+```
+```bash
 helm install -n harbor harbor harbor/harbor -f values.yaml -n harbor --create-namespace
 ```
 
@@ -9,5 +12,6 @@ kubectl get secret -n harbor harbor-core -o jsonpath='{.data.HARBOR_ADMIN_PASSWO
 ```
 
 ```bash
-helm uninstall harbor
+helm uninstall harbor harbor
+kubectl delete namespace harbor
 ```
