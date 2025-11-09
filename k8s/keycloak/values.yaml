@@ -1,0 +1,23 @@
+image:
+  repository: bitnamilegacy/keycloak
+  adminPassword: "April03,2001"
+
+proxyHeaders: "xforwarded"
+
+ingress:
+  enabled: true
+  hostname: keycloak.local.thongdanghoang.id.vn
+  ingressClassName: "nginx"
+  path: /
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  tls: true
+  selfSigned: true
+
+keycloakConfigCli:
+  image:
+    repository: bitnamilegacy/keycloak-config-cli
+postgresql:
+  image:
+    repository: bitnamilegacy/postgresql
