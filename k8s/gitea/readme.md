@@ -15,6 +15,10 @@ helm install gitea gitea-charts/gitea -n gitea --create-namespace -f values.yaml
 ```
 
 ```bash
+helm upgrade gitea gitea-charts/gitea -n gitea -f values.yaml
+```
+
+```bash
 helm uninstall gitea -n gitea
 kubectl delete namespace gitea
 ```

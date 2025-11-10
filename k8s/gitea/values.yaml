@@ -433,6 +433,8 @@ gitea:
     server:
       SSH_PORT: 22 # rootful image
       SSH_LISTEN_PORT: 2222 # rootless image
+    webhook:
+      ALLOWED_HOST_LIST: "*"
   #
   #  security:
   #    PASSWORD_COMPLEXITY: spec
