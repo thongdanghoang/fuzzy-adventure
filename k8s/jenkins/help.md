@@ -60,10 +60,10 @@ Vì bạn đã có Harbor, bạn sẽ build image này và đẩy nó lên regis
 
     ```bash
     # Build image
-    docker build -t harbor.local.thongdanghoang.id.vn/ci-tools/jenkins-agent-maven-node:latest .
+    docker build -t harbor.local.thongdanghoang.id.vn/ci-tools/jenkins-agent-maven-node:arm64 .
 
     # Đẩy image lên Harbor
-    docker push harbor.local.thongdanghoang.id.vn/ci-tools/jenkins-agent-maven-node:latest
+    docker push harbor.local.thongdanghoang.id.vn/ci-tools/jenkins-agent-maven-node:arm64
     ```
 
 -----

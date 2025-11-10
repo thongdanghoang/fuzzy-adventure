@@ -12,3 +12,12 @@ kubectl --namespace jenkins get secret jenkins -o jsonpath="{.data.jenkins-admin
 helm uninstall jenkins jenkins/jenkins
 kubectl delete namespace jenkins
 ```
+
+```bash
+kubectl create secret docker-registry harbor-credentials \
+    --namespace=jenkins \
+    --docker-server=harbor-core.harbor.svc.cluster.local:80 \
+    --docker-username=admin \
+    --docker-password=April03,2001 \
+    --docker-email=email@example.com
+```
