@@ -12,38 +12,6 @@ Thay vì dùng một image agent chung chung (như `jenkins/inbound-agent`) và 
 
 Bạn tạo một file tên là `Dockerfile` (không có đuôi) với nội dung sau. File này sẽ lấy image agent cơ bản và cài thêm các tool bạn cần.
 
-```dockerfile
-# Bắt đầu từ image agent có sẵn JDK 17 (hoặc JDK 11, 21 tuỳ bạn)
-FROM jenkins/inbound-agent:latest-jdk17
-
-# Chuyển sang user 'root' để có quyền cài đặt
-USER root
-
-# --- Cài Maven (Ví dụ: phiên bản 3.9.8) ---
-# (Jenkins tool của bạn ghi 3.9.11, có thể là tên tuỳ chỉnh, 
-# ở đây tôi dùng bản 3.9.8 chính thức)
-ARG MVN_VERSION=3.9.8
-RUN apt-get update && apt-get install -y wget \
-    && wget https://archive.apache.org/dist/maven/maven-3/${MVN_VERSION}/binaries/apache-maven-${MVN_VERSION}-bin.tar.gz \
-    && tar -xzf apache-maven-${MVN_VERSION}-bin.tar.gz -C /opt \
-    && ln -s /opt/apache-maven-${MVN_VERSION}/bin/mvn /usr/bin/mvn \
-    && rm apache-maven-${MVN_VERSION}-bin.tar.gz \
-    && apt-get-purge -y wget
-
-# --- Cài Node.js (Ví dụ: phiên bản 22.x) ---
-# (Lấy bản LTS gần nhất với yêu cầu 22.21.1 của bạn)
-ARG NODE_VERSION=22.2.0 
-RUN wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
-    && tar -xvf node-v${NODE_VERSION}-linux-x64.tar.xz -C /usr/local --strip-components=1 \
-    && rm node-v${NODE_VERSION}-linux-x64.tar.xz
-
-# --- Dọn dẹp ---
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# (Quan trọng) Chuyển về user 'jenkins' để chạy agent
-USER jenkins
-```
-
 -----
 
 ### 📦 Bước 2: Build và Push Image lên Harbor

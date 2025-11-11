@@ -8,6 +8,10 @@ helm upgrade --install artifactory-oss jfrog/artifactory-oss --namespace artifac
 ```
 
 ```bash
+helm upgrade artifactory-oss jfrog/artifactory-oss -n artifactory-oss -f values.yaml
+```
+
+```bash
 kubectl get secret -n artifactory-oss artifactory-oss -o jsonpath="{.data.password}" | base64 -d
 ```
 

@@ -6,6 +6,9 @@ helm repo update
 helm install jenkins jenkins/jenkins -f values.yaml -n jenkins --create-namespace
 ```
 ```bash
+helm upgrade jenkins jenkins/jenkins -f values.yaml -n jenkins
+```
+```bash
 kubectl --namespace jenkins get secret jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
 ```
 ```bash
