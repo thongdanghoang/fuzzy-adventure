@@ -24,3 +24,7 @@ kubectl create secret docker-registry harbor-credentials \
     --docker-password=April03,2001 \
     --docker-email=email@example.com
 ```
+
+```bash
+kubectl apply -f maven-repo-pvc.yaml -n jenkins
+```
