@@ -169,7 +169,7 @@ ingress:
   pathType: Prefix
   annotations: {}
   hosts:
-    - host: gitea.local.thongdanghoang.id.vn
+    - host: gitea.local
       paths:
         - path: /
           pathType: Prefix
@@ -368,7 +368,7 @@ gitea:
     existingSecret:
     username: gitea_admin
     password: April03,2001
-    email: "gitea@local.thongdanghoang.id.vn"
+    email: "gitea@local"
     passwordMode: keepUpdated
 
   ## @param gitea.metrics.enabled Enable Gitea metrics

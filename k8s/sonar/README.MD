@@ -9,6 +9,10 @@ helm upgrade -f values.yaml --install -n sonarqube sonarqube sonarqube/sonarqube
 ```
 
 ```bash
+helm upgrade -f values.yaml --install -n sonarqube sonarqube sonarqube/sonarqube
+```
+
+```bash
 helm uninstall -n sonarqube sonarqube
 kubectl delete namespace sonarqube
 ```

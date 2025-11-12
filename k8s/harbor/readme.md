@@ -5,6 +5,9 @@ helm update
 ```bash
 helm install -n harbor harbor harbor/harbor -f values.yaml -n harbor --create-namespace
 ```
+```bash
+helm upgrade -n harbor harbor harbor/harbor -f values.yaml -n harbor
+```
 
 # admin
 ```bash
