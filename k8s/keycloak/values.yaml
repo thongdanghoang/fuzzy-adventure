@@ -6,7 +6,7 @@ proxyHeaders: "xforwarded"
 
 ingress:
   enabled: true
-  hostname: keycloak.local.thongdanghoang.id.vn
+  hostname: keycloak.local
   ingressClassName: "nginx"
   path: /
   annotations:
