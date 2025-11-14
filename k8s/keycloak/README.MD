@@ -4,8 +4,10 @@ helm install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak -f value
 
 ```bash
 helm upgrade keycloak oci://registry-1.docker.io/bitnamicharts/keycloak -f values.yaml -n keycloak
-kubectl -n keycloak get secret keycloak.local-tls -o jsonpath='{.data.tls\.crt}' | base64 --decode > keycloak-ca.crt
 ```
+```bash
+kubectl -n keycloak get secret keycloak.local-tls -o jsonpath='{.data.tls\.crt}' | base64 --decode > keycloak-ca.crt
+
 
 ```bash
 helm install my-release oci://registry-1.docker.io/bitnamicharts/keycloak
