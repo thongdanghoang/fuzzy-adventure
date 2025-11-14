@@ -28,3 +28,11 @@ kubectl create secret docker-registry harbor-credentials \
 ```bash
 kubectl apply -f maven-repo-pvc.yaml -n jenkins
 ```
+
+
+```json
+{
+  "disable-trust-manager": true,
+  "allow-any-hostname": true
+}
+```
