@@ -295,10 +295,21 @@ postExtraInitContainers: []
 #   command: [ /bin/sh, -c, 'echo "Hello world! I am a post init container."' ]
 
 ## @param extraVolumes Additional volumes to mount to the Gitea deployment
-extraVolumes: []
+#extraVolumes: []
 # - name: postgres-ssl-vol
 #   secret:
 #     secretName: gitea-postgres-ssl
+extraVolumes:
+  - name: keycloak-ca
+    configMap:
+      name: keycloak-ca
+      defaultMode: 420
+
+extraVolumeMounts:
+  - name: keycloak-ca
+    mountPath: /etc/ssl/certs/keycloak-ca.crt
+    subPath: keycloak-ca.crt
+    readOnly: true
 
 ## @param extraContainerVolumeMounts Mounts that are only mapped into the Gitea runtime/main container, to e.g. override custom templates.
 extraContainerVolumeMounts: []
@@ -311,7 +322,7 @@ extraInitVolumeMounts: []
 ## - extraInitVolumeMounts
 ## As an example, can be used to mount a client cert when connecting to an external Postgres server.
 ## @param extraVolumeMounts **DEPRECATED** Additional volume mounts for init containers and the Gitea main container
-extraVolumeMounts: []
+#extraVolumeMounts: []
 # - name: postgres-ssl-vol
 #   readOnly: true
 #   mountPath: "/pg-ssl"
@@ -435,6 +446,10 @@ gitea:
       SSH_LISTEN_PORT: 2222 # rootless image
     webhook:
       ALLOWED_HOST_LIST: "*"
+      SKIP_TLS_VERIFY: true
+    service:
+      # Allow Gitea to fetch the OIDC config from a local/internal IP
+      ALLOW_ONLY_EXTERNAL_REGISTRATION: false
   #
   #  security:
   #    PASSWORD_COMPLEXITY: spec

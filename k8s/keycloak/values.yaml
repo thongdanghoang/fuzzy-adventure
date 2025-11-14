@@ -11,9 +11,11 @@ ingress:
   path: /
   annotations:
     kubernetes.io/ingress.class: nginx
+#    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
   tls: true
   selfSigned: true
+#  tls: []
 
 keycloakConfigCli:
   image:
@@ -21,3 +23,8 @@ keycloakConfigCli:
 postgresql:
   image:
     repository: bitnamilegacy/postgresql
+extraEnvVars :
+  - name: KC_HOSTNAME
+    value: "keycloak.local"
+#  - name: KC_HOSTNAME_STRICT_HTTPS
+#    value: "false"
