@@ -181,6 +181,8 @@ ingress:
       pathType: Prefix
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "local-ca-issuer"
   # kubernetes.io/tls-acme: "true"
 
   # Set the ingressClassName on the ingress record
@@ -190,7 +192,10 @@ ingress:
   # labels:
   #  traffic-type: external
   #  traffic-type: internal
-  tls: []
+  tls:
+    - secretName: sonarqube-tls-secret
+      hosts:
+        - sonarqube.local
   # Secrets must be manually created in the namespace. To generate a self-signed certificate (and private key) and then create the secret in the cluster please refer to official documentation available at https://kubernetes.github.io/ingress-nginx/user-guide/tls/#tls-secrets
   # - secretName: chart-example-tls
   #   hosts:
