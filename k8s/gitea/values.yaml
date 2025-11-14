@@ -19,8 +19,8 @@ ingress:
 config:
   server:
     ROOT_URL: "https://gitea.local"
-    DOMAIN: "git.local"
-    SSH_DOMAIN: "git.local"
+    DOMAIN: "gitea.local"
+    SSH_DOMAIN: "gitea.local"
   webhook:
     ALLOWED_HOST_LIST: "*"
 
@@ -35,3 +35,14 @@ postgresql-ha:
 
 postgresql:
   enabled: true
+
+extraVolumes:
+  - name: local-ca-volume
+    secret:
+      secretName: local-ca-trust
+
+extraContainerVolumeMounts:
+  - name: local-ca-volume
+    mountPath: /etc/ssl/certs/custom-ca.crt
+    subPath: ca.crt
+    readOnly: true
