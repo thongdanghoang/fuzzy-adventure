@@ -85,6 +85,7 @@ controller:
 ```bash
 kubectl describe pod jenkins-0 -n jenkins
 kubectl logs jenkins-0 -n jenkins -c init
+kubectl get ingress --all-namespaces
 ```
 
 # Upgrade
