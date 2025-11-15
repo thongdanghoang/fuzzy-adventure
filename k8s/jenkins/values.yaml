@@ -51,6 +51,16 @@ controller:
           key: sonar-token
     - name: SONAR_TOKEN_ID
       value: "sonar-token-id"
+    # Gitea
+    - name: GITEA_SERVER_URL
+      value: "https://gitea.local"
+    - name: GITEA_AUTH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-gitea-creds
+          key: gitea-token
+    - name: GITEA_TOKEN_ID
+      value: "gitea-token-id"
   JCasC:
     configScripts:
       security-realm: |
@@ -81,6 +91,11 @@ controller:
                       id: "${SONAR_TOKEN_ID}"  
                       secret: "${SONAR_AUTH_TOKEN}"
                       description: "SonarQube Server Authentication Token"
+                  - string:
+                      scope: GLOBAL
+                      id: "${GITEA_TOKEN_ID}"
+                      secret: "${GITEA_AUTH_TOKEN}"
+                      description: "Gitea Server Authentication Token"
       sonar-config: |
         unclassified:
           sonarGlobalConfiguration:
@@ -92,6 +107,10 @@ controller:
                 triggers:
                   skipScmCause: false
                   skipUpstreamCause: false
+          scmGit:
+            globalConfigName: "Jenkins"
+            globalConfigEmail: "jenkins@local"
+            createAccountBasedOnEmail: false
 
 agent:
   jenkinsUrl: "https://jenkins.local/"
