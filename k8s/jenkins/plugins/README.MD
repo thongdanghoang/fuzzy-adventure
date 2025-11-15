@@ -1,11 +1,5 @@
 ```bash
 docker build -t jenkins:lts-jdk21 .
-docker tag jenkins:lts-jdk21 harbor.local/library/jenkins:lts-jdk21
-docker push harbor.local/library/jenkins:lts-jdk21
-```
-
-```bash
-docker build -t jenkins:lts-jdk21 .
-docker tag jenkins:lts-jdk21 thongdh3401/jenkins:lts-jdk21
-docker push thongdh3401/jenkins:lts-jdk21
+docker tag jenkins:lts-jdk21 harbor.orb.local/library/jenkins:lts-jdk21
+docker push harbor.orb.local/library/jenkins:lts-jdk21
 ```
