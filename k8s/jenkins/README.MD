@@ -6,7 +6,7 @@ helm repo update
 
 # Install Jenkins
 ```bash
-helm install jenkins jenkins/jenkins -f values.yaml -n jenkins --create-namespace
+helm install jenkins jenkins/jenkins -f values.yaml -n jenkins
 ```
 
 # Get password
@@ -16,7 +16,6 @@ kubectl --namespace jenkins get secret jenkins -o jsonpath="{.data.jenkins-admin
 
 # Uninstall
 ```bash
-helm uninstall jenkins jenkins/jenkins
 kubectl delete namespace jenkins
 ```
 
@@ -33,14 +32,25 @@ kubectl create secret docker-registry harbor-credentials \
 # Apply Maven repository PersistentVolumeClaim
 ```bash
 kubectl apply -f maven-repo-pvc.yaml -n jenkins
+kubectl get all,pvc,secret -n jenkins
 ```
 
-# Create KeyCloak credentials secret
+# Integration
+## Create KeyCloak credentials secret
 ```bash
+kubectl create namespace jenkins
 kubectl create secret generic jenkins-keycloak-creds \
-  --from-literal=client-secret='CHANGE_ME' \
+  --from-literal=client-secret='CHANGEME' \
   --namespace jenkins
 kubectl get secret -n jenkins jenkins-keycloak-creds -o yaml
+```
+
+## Create Sonar credentials secret
+```bash
+kubectl create secret generic jenkins-sonar-creds \
+  --from-literal=sonar-token='CHANGEME' \
+  --namespace jenkins
+kubectl get secret -n jenkins jenkins-sonar-creds -o yaml
 ```
 
 ## Update JCasC configuration
@@ -60,6 +70,15 @@ controller:
         secretKeyRef:
           name: jenkins-keycloak-creds
           key: client-secret
+    - name: SONAR_SERVER_URL
+      value: "http://sonarqube.local"
+    - name: SONAR_AUTH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-sonar-creds
+          key: sonar-token
+    - name: SONAR_TOKEN_ID
+      value: "sonar-token-id"
   JCasC:
     configScripts:
       security-realm: |
@@ -79,6 +98,27 @@ controller:
                   "disable-trust-manager": "${DISABLE_TRUST_MANAGER}",
                   "allow-any-hostname": "${ALLOW_ANY_HOSTNAME}"
                 }
+      credentials: |
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                  - string:
+                      scope: GLOBAL
+                      id: "${SONAR_TOKEN_ID}"  
+                      secret: "${SONAR_AUTH_TOKEN}"
+                      description: "SonarQube Server Authentication Token"
+      sonar-config: |
+        unclassified:
+          sonarGlobalConfiguration:
+            buildWrapperEnabled: true
+            installations:
+              - name: "SonarQube"
+                serverUrl: "${SONAR_SERVER_URL}"
+                serverAuthenticationToken: "${SONAR_TOKEN_ID}"
+                triggers:
+                  skipScmCause: false
+                  skipUpstreamCause: false
 ```
 
 # Debug
@@ -86,6 +126,14 @@ controller:
 kubectl describe pod jenkins-0 -n jenkins
 kubectl logs jenkins-0 -n jenkins -c init
 kubectl get ingress --all-namespaces
+```
+
+# Check log with correlation ID
+```bash
+kubectl logs jenkins-0 -n jenkins | grep -B 5 -A 30 "248242bb-6a1a-42ba-8f6d-1a0978cdc2ca"
+kubectl exec jenkins-0 -n jenkins -- curl -v https://keycloak.local
+kubectl get configmap coredns -n kube-system -o yaml
+kubectl edit configmap coredns -n kube-system
 ```
 
 # Upgrade

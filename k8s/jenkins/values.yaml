@@ -1,4 +1,8 @@
 controller:
+  hostAliases:
+    - ip: "192.168.139.2"
+      hostnames:
+        - "keycloak.local"
   ingress:
     enabled: true
     apiVersion: "networking.k8s.io/v1"
@@ -22,6 +26,7 @@ controller:
     - sonar:2.18
     - generic-webhook-trigger:2.4.1
   containerEnv:
+    # Keycloak
     - name: KEYCLOAK_REALM
       value: "orbstack"
     - name: KEYCLOAK_AUTH_SERVER_URL
@@ -35,6 +40,16 @@ controller:
         secretKeyRef:
           name: jenkins-keycloak-creds
           key: client-secret
+    # SonarQube
+    - name: SONAR_SERVER_URL
+      value: "https://sonarqube.local"
+    - name: SONAR_AUTH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-sonar-creds
+          key: sonar-token
+    - name: SONAR_TOKEN_ID
+      value: "sonar-token-id"
   JCasC:
     configScripts:
       security-realm: |
@@ -54,6 +69,28 @@ controller:
                   "disable-trust-manager": "${DISABLE_TRUST_MANAGER}",
                   "allow-any-hostname": "${ALLOW_ANY_HOSTNAME}"
                 }
+
+      credentials: |
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                  - string:
+                      scope: GLOBAL
+                      id: "${SONAR_TOKEN_ID}"  
+                      secret: "${SONAR_AUTH_TOKEN}"
+                      description: "SonarQube Server Authentication Token"
+      sonar-config: |
+        unclassified:
+          sonarGlobalConfiguration:
+            buildWrapperEnabled: true
+            installations:
+              - name: "SonarQube Local"
+                serverUrl: "${SONAR_SERVER_URL}"
+                serverAuthenticationToken: "${SONAR_TOKEN_ID}"
+                triggers:
+                  skipScmCause: false
+                  skipUpstreamCause: false
 
 agent:
   jenkinsUrl: "https://jenkins.local/"
