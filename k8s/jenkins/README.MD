@@ -1,12 +1,79 @@
-# Add Jenkins Helm repository
+# Jenkins on Kubernetes
+
+Jenkins CI/CD server running on Kubernetes with:
+- ✅ HTTP only (no TLS for local development)
+- ✅ Harbor local registry for fast image pulls
+- ✅ Keycloak SSO authentication
+- ✅ SonarQube integration
+- ✅ Gitea Git repository integration
+- ✅ Pre-configured Git credentials
+
+## Quick Start
+
+### 1. Add Jenkins Helm repository
 ```bash
 helm repo add jenkins https://charts.jenkins.io
 helm repo update
 ```
 
-# Install Jenkins
+### 2. Install Jenkins
 ```bash
 helm install jenkins jenkins/jenkins -f values.yaml -n jenkins
+```
+
+### 3. Access Jenkins
+- URL: http://jenkins.local
+- Get admin password:
+  ```bash
+  kubectl exec --namespace jenkins -it svc/jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password && echo
+  ```
+
+# Why Use Harbor Local Registry?
+
+## Performance Benefits
+Using Harbor local registry (`harbor.orb.local/library/jenkins:lts-jdk21`) instead of Docker Hub provides **significant performance improvements**:
+
+### Speed Comparison
+- **Docker Hub**: 30-60 seconds to pull image (depends on internet speed)
+- **Harbor Local**: 2-5 seconds to pull image (local network speed)
+
+### Benefits
+1. **Faster Jenkins Restarts**:
+   - Image already cached in local Harbor registry
+   - No internet dependency
+   - Consistent pull times regardless of internet connection
+
+2. **Offline Development**:
+   - Works without internet connection
+   - No rate limiting from Docker Hub
+
+3. **Image Consistency**:
+   - Same image version across all environments
+   - No unexpected updates from upstream
+
+### Setup Harbor Mirror
+```bash
+# Pull Jenkins image from Docker Hub
+docker pull jenkins/jenkins:lts-jdk21
+
+# Tag for Harbor
+docker tag jenkins/jenkins:lts-jdk21 harbor.orb.local/library/jenkins:lts-jdk21
+
+# Push to Harbor
+docker login harbor.orb.local
+docker push harbor.orb.local/library/jenkins:lts-jdk21
+```
+
+### Configuration in values.yaml
+```yaml
+controller:
+  image:
+    registry: "harbor.orb.local"
+    repository: "library/jenkins"
+    tag: "lts-jdk21"
+    pullPolicy: "IfNotPresent"
+  imagePullSecrets:
+    - name: harbor-registry-secret
 ```
 
 # Get password
@@ -185,6 +252,11 @@ helm upgrade jenkins jenkins/jenkins -f values.yaml -n jenkins
 
 # Integrations Summary
 
+## Jenkins Access
+- **URL**: http://jenkins.local (HTTP only, no TLS in local environment)
+- **Ingress**: Nginx (port 80)
+- **Authentication**: Keycloak SSO
+
 ## Keycloak (SSO Authentication)
 - **Purpose**: Single Sign-On authentication for Jenkins
 - **URL**: https://keycloak.local/
@@ -195,9 +267,10 @@ helm upgrade jenkins jenkins/jenkins -f values.yaml -n jenkins
 
 ## SonarQube (Code Quality Analysis)
 - **Purpose**: Static code analysis and quality gates
-- **URL**: https://sonarqube.local
+- **URL**: http://sonarqube.local (HTTP only, no TLS in local environment)
 - **Token**: Stored in `jenkins-sonar-creds` Kubernetes secret
 - **Credential ID**: `sonar-token-id` (use this ID in Jenkins pipelines)
+- **Server Name**: `SonarQube Local` (configured in JCasC)
 - **Usage in Pipeline**:
   ```groovy
   withSonarQubeEnv('SonarQube Local') {
@@ -207,25 +280,41 @@ helm upgrade jenkins jenkins/jenkins -f values.yaml -n jenkins
 
 ## Gitea (Git Repository)
 - **Purpose**: Source code management and Git operations
-- **URL**: https://gitea.local
+- **External URL**: http://gitea.local (for browser access)
+- **Internal URL**: http://gitea-http.gitea.svc.cluster.local:3000 (for Jenkins to access)
 - **Token**: Stored in `jenkins-gitea-creds` Kubernetes secret
-- **Credential ID**: `gitea-token-id` (use this ID in Jenkins pipelines)
-- **Git Config**:
-  - Name: Jenkins
-  - Email: jenkins@local
-- **Note**: Gitea không cần cấu hình server riêng như GitLab. Chỉ cần Git SCM global config và credentials là đủ để sử dụng.
+- **Credentials**:
+  - **API Token**: `gitea-token-id` (for Gitea API operations)
+  - **Git Credentials**: `gitea-git-credentials` (for Git clone/push operations)
+    - Username: `gitea_admin`
+    - Password: Gitea token (same as API token)
+- **Note**:
+  - Gitea không cần cấu hình server riêng như GitLab
+  - Git tool configuration đã được xóa (dùng Git mặc định trong container)
+  - Global git config (name/email) đã được xóa để đơn giản hóa
+  - **IMPORTANT**: Jenkins phải dùng internal URL (`gitea-http.gitea.svc.cluster.local:3000`) vì `gitea.local` chỉ resolve được từ bên ngoài cluster
 - **Usage in Pipeline**:
   ```groovy
-  // Sử dụng với Git plugin
-  git credentialsId: 'gitea-token-id', url: 'https://gitea.local/your-org/your-repo.git'
+  // Pipeline from SCM (recommended)
+  // Configure in Jenkins UI:
+  // - Pipeline from SCM → Git
+  // - Repository URL: http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/your-repo.git
+  // - Credentials: gitea-git-credentials
+  // - Branch: */main
+  // - Script Path: Jenkinsfile
 
-  // Hoặc sử dụng checkout
+  // Or use in pipeline script
+  git credentialsId: 'gitea-git-credentials',
+      url: 'http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/your-repo.git',
+      branch: 'main'
+
+  // Or use checkout
   checkout([
     $class: 'GitSCM',
     branches: [[name: '*/main']],
     userRemoteConfigs: [[
-      url: 'https://gitea.local/your-org/your-repo.git',
-      credentialsId: 'gitea-token-id'
+      url: 'http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/your-repo.git',
+      credentialsId: 'gitea-git-credentials'
     ]]
   ])
   ```
@@ -241,24 +330,46 @@ helm upgrade jenkins jenkins/jenkins -f values.yaml -n jenkins
 # Troubleshooting
 
 ## Gitea Integration Issues
-1. **Check if Gitea token is valid**:
+
+### Common Issue: Cannot connect to gitea.local
+**Problem**: Jenkins cannot resolve `gitea.local` domain inside the cluster.
+
+**Solution**: Use internal Kubernetes service URL instead:
+- ❌ Wrong: `http://gitea.local/gitea_admin/repo.git`
+- ✅ Correct: `http://gitea-http.gitea.svc.cluster.local:3000/gitea_admin/repo.git`
+
+### Troubleshooting Steps
+
+1. **Test Gitea connectivity from Jenkins pod**:
+   ```bash
+   # Test internal URL (should work)
+   kubectl exec jenkins-0 -n jenkins -- curl -v http://gitea-http.gitea.svc.cluster.local:3000
+
+   # Test external URL (may not work inside cluster)
+   kubectl exec jenkins-0 -n jenkins -- curl -v http://gitea.local
+   ```
+
+2. **Check if Gitea token is valid**:
    ```bash
    kubectl get secret jenkins-gitea-creds -n jenkins -o jsonpath='{.data.gitea-token}' | base64 --decode
    ```
 
-2. **Test Gitea connectivity from Jenkins pod**:
-   ```bash
-   kubectl exec jenkins-0 -n jenkins -- curl -v https://gitea.local
-   ```
-
-3. **Verify credential is loaded in Jenkins**:
+3. **Verify credentials are loaded in Jenkins**:
    - Go to Jenkins UI → Manage Jenkins → Credentials
-   - Look for credential with ID `gitea-token-id`
+   - Look for credentials:
+     - `gitea-token-id` (API token)
+     - `gitea-git-credentials` (Git username/password)
 
 4. **Check JCasC configuration logs**:
    ```bash
    kubectl logs jenkins-0 -n jenkins | grep -i gitea
    kubectl logs jenkins-0 -n jenkins | grep -i "configuration as code"
+   ```
+
+5. **Get Gitea service details**:
+   ```bash
+   kubectl get svc -n gitea
+   # Look for: gitea-http service on port 3000
    ```
 
 ## SonarQube Integration Issues
