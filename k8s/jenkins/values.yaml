@@ -1,17 +1,60 @@
-ingress:
-  enabled: true
-  apiVersion: "networking.k8s.io/v1"
-  ingressClassName: nginx
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "local-ca-issuer"
-  path: /
-  hostName: jenkins.local
-  tls:
-    - secretName: jenkins-tls-secret
-      hosts:
-        - jenkins.local
+controller:
+  ingress:
+    enabled: true
+    apiVersion: "networking.k8s.io/v1"
+    ingressClassName: nginx
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: "local-ca-issuer"
+    path: /
+    hostName: jenkins.local
+    tls:
+      - secretName: jenkins-tls-secret
+        hosts:
+          - jenkins.local
+  installPlugins:
+#    - kubernetes:4384.v1b_6367f393d9
+    - kubernetes:4392.v19cea_fdb_5913
+    - workflow-aggregator:608.v67378e9d3db_1
+    - git:5.8.0
+    - configuration-as-code:2006.v001a_2ca_6b_574
+    - keycloak:2.3.2
+    - sonar:2.18
+    - generic-webhook-trigger:2.4.1
+  env:
+    - name: KEYCLOAK_REALM
+      value: "orbstack"
+    - name: KEYCLOAK_AUTH_SERVER_URL
+      value: "https://keycloak.local/"
+    - name: DISABLE_TRUST_MANAGER
+      value: "true"
+    - name: ALLOW_ANY_HOSTNAME
+      value: "true"
+    - name: KEYCLOAK_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-keycloak-creds
+          key: client-secret
+  JCasC:
+    configScripts:
+      security-realm: |
+        jenkins:
+          securityRealm:
+            keycloak:
+              keycloakJson: |
+                {
+                  "realm": "${KEYCLOAK_REALM}",
+                  "auth-server-url": "${KEYCLOAK_AUTH_SERVER_URL}",
+                  "ssl-required": "external",
+                  "resource": "jenkins",
+                  "credentials": {
+                    "secret": "${KEYCLOAK_CLIENT_SECRET}" 
+                  },
+                  "confidential-port": 0,
+                  "disable-trust-manager": "${DISABLE_TRUST_MANAGER}",
+                  "allow-any-hostname": "${ALLOW_ANY_HOSTNAME}"
+                }
 
 agent:
   jenkinsUrl: "https://jenkins.local/"
