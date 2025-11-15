@@ -16,6 +16,19 @@ ingress:
       hosts:
         - gitea.local
 
+gitea:
+  admin:
+    username: gitea_admin
+    password: CHANGEME
+    email: "gitea@local.domain"
+  oauth:
+    - name: 'Keycloak'
+      provider: 'openidConnect'
+      key: 'gitea'
+      secret: 'CHANGEME'
+      autoDiscoverUrl: 'https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/thongdhse160015/.well-known/openid-configuration'
+      scopes: 'openid profile email'
+
 config:
   server:
     ROOT_URL: "https://gitea.local"
