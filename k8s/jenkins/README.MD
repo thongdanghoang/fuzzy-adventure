@@ -38,7 +38,7 @@ kubectl get all,pvc,secret -n jenkins
 # Integration
 ## Create KeyCloak credentials secret
 ```bash
-kubectl create namespace jenkins
+kubectl delete secret jenkins-keycloak-creds -n jenkins
 kubectl create secret generic jenkins-keycloak-creds \
   --from-literal=client-secret='CHANGEME' \
   --namespace jenkins
@@ -47,6 +47,7 @@ kubectl get secret -n jenkins jenkins-keycloak-creds -o yaml
 
 ## Create Sonar credentials secret
 ```bash
+kubectl delete secret jenkins-sonar-creds -n jenkins
 kubectl create secret generic jenkins-sonar-creds \
   --from-literal=sonar-token='CHANGEME' \
   --namespace jenkins

@@ -1,4 +1,12 @@
 controller:
+  image:
+    registry: "harbor.orb.local"
+    repository: "library/jenkins"
+    tag: "lts-jdk21"
+    tagLabel: ""
+    pullPolicy: "IfNotPresent"
+  imagePullSecrets:
+    - name: harbor-registry-secret
   hostAliases:
     - ip: "192.168.139.2"
       hostnames:
@@ -17,22 +25,15 @@ controller:
       - secretName: jenkins-tls-secret
         hosts:
           - jenkins.local
-  installPlugins:
-    - kubernetes:4384.v1b_6367f393d9
-    - workflow-aggregator:608.v67378e9d3db_1
-    - git:5.8.0
-    - configuration-as-code:2006.v001a_2ca_6b_574
-    - keycloak:2.3.2
-    - sonar:2.18
-    - generic-webhook-trigger:2.4.1
+  installPlugins: []
   containerEnv:
     # Keycloak
     - name: KEYCLOAK_REALM
-      value: "orbstack"
+      value: "thongdhse160015"
     - name: KEYCLOAK_AUTH_SERVER_URL
-      value: "https://keycloak.local/"
+      value: "https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/"
     - name: DISABLE_TRUST_MANAGER
-      value: "true"
+      value: "false"
     - name: ALLOW_ANY_HOSTNAME
       value: "true"
     - name: KEYCLOAK_CLIENT_SECRET
@@ -87,7 +88,7 @@ controller:
             installations:
               - name: "SonarQube Local"
                 serverUrl: "${SONAR_SERVER_URL}"
-                serverToken: "${SONAR_TOKEN_ID}"
+                serverAuthenticationToken: "${SONAR_TOKEN_ID}"
                 triggers:
                   skipScmCause: false
                   skipUpstreamCause: false
