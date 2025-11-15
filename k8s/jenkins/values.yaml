@@ -111,6 +111,8 @@ controller:
             globalConfigName: "Jenkins"
             globalConfigEmail: "jenkins@local"
             createAccountBasedOnEmail: false
+          globalDefaultFlowDurabilityLevel:
+            durabilityHint: PERFORMANCE_OPTIMIZED
 
 agent:
   jenkinsUrl: "https://jenkins.local/"
