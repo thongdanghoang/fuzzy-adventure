@@ -98,7 +98,7 @@ controller:
           sonarGlobalConfiguration:
             buildWrapperEnabled: true
             installations:
-              - name: "SonarQube Local"
+              - name: "MySonarQube"
                 serverUrl: "${SONAR_SERVER_URL}"
                 credentialsId: "${SONAR_TOKEN_ID}"
                 triggers:
@@ -106,6 +106,19 @@ controller:
                   skipUpstreamCause: false
           globalDefaultFlowDurabilityLevel:
             durabilityHint: PERFORMANCE_OPTIMIZED
+      maven-tool: |
+        tool:
+          maven:
+            installations:
+              - name: "Maven"
+                home: "/usr/share/maven"
+
+persistence:
+  enabled: true
+  existingClaim: maven-repo-cache
+  storageClass: local-path
+  accessMode: ReadWriteOnce
+  size: 10Gi
 
 agent:
   jenkinsUrl: "http://jenkins.local/"
