@@ -18,14 +18,12 @@ ingress:
 
 gitea:
   admin:
-    username: gitea_admin
-    password: CHANGEME
-    email: "gitea@local.domain"
+    existingSecret: gitea-admin-secret
   oauth:
     - name: 'Keycloak'
       provider: 'openidConnect'
       key: 'gitea'
-      secret: 'CHANGEME'
+      existingSecret: gitea-oauth-secret
       autoDiscoverUrl: 'https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/thongdhse160015/.well-known/openid-configuration'
       scopes: 'openid profile email'
 
