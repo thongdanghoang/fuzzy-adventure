@@ -1,4 +1,4 @@
-curl -u "admin:April03,2001" \
+curl -u "admin:Harbor12345" \
   -X PUT \
   -H "Content-Type: application/json" \
   https://harbor.local/api/v2.0/configurations \
@@ -6,7 +6,7 @@ curl -u "admin:April03,2001" \
         "auth_mode": "oidc_auth",
         "oidc_client_id": "harbor",
         "oidc_endpoint": "https://keycloak.local/realms/orbstack",
-        "oidc_client_secret": "",
+        "oidc_client_secret": "6XIETELLe6BI9DzLi4rmmpFrV6KAkRSV",
         "oidc_logout": true,
         "oidc_name": "keycloak",
         "oidc_scope": "openid",

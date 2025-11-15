@@ -53,6 +53,17 @@ kubectl create secret generic jenkins-sonar-creds \
 kubectl get secret -n jenkins jenkins-sonar-creds -o yaml
 ```
 
+## Create Docker registry credentials secret for Harbor
+```bash
+kubectl create secret docker-registry jenkins-harbor-secret \
+  --docker-server=harbor-core.harbor.svc.cluster.local:80 \
+  --docker-username=admin \
+  --docker-password=Harbor12345 \
+  --docker-email=admin@harbor.local \
+  --namespace jenkins
+kubectl get secret -n jenkins jenkins-harbor-secret -o yaml
+```
+
 ## Update JCasC configuration
 ```yaml
 controller:
@@ -115,17 +126,10 @@ controller:
             installations:
               - name: "SonarQube"
                 serverUrl: "${SONAR_SERVER_URL}"
-                serverAuthenticationToken: "${SONAR_TOKEN_ID}"
+                serverToken: "${SONAR_TOKEN_ID}"
                 triggers:
                   skipScmCause: false
                   skipUpstreamCause: false
-```
-
-# Debug
-```bash
-kubectl describe pod jenkins-0 -n jenkins
-kubectl logs jenkins-0 -n jenkins -c init
-kubectl get ingress --all-namespaces
 ```
 
 # Check log with correlation ID
@@ -134,6 +138,13 @@ kubectl logs jenkins-0 -n jenkins | grep -B 5 -A 30 "248242bb-6a1a-42ba-8f6d-1a0
 kubectl exec jenkins-0 -n jenkins -- curl -v https://keycloak.local
 kubectl get configmap coredns -n kube-system -o yaml
 kubectl edit configmap coredns -n kube-system
+```
+
+# Debug
+```bash
+kubectl describe pod jenkins-0 -n jenkins
+kubectl logs jenkins-0 -n jenkins -c init
+kubectl get ingress --all-namespaces
 ```
 
 # Upgrade

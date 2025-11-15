@@ -87,7 +87,7 @@ controller:
             installations:
               - name: "SonarQube Local"
                 serverUrl: "${SONAR_SERVER_URL}"
-                serverAuthenticationToken: "${SONAR_TOKEN_ID}"
+                serverToken: "${SONAR_TOKEN_ID}"
                 triggers:
                   skipScmCause: false
                   skipUpstreamCause: false
