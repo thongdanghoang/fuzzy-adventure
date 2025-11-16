@@ -37,7 +37,7 @@ controller:
           key: client-secret
     # SonarQube
     - name: SONAR_SERVER_URL
-      value: "https://sonarqube.local"
+      value: "http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000"
     - name: SONAR_AUTH_TOKEN
       valueFrom:
         secretKeyRef:
