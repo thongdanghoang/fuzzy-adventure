@@ -24,20 +24,54 @@ kubectl get secret -n harbor harbor-core -o jsonpath='{.data.HARBOR_ADMIN_PASSWO
 ```
 Default password: `Harbor12345`
 
-### 4. Test Docker Login
+### 4. Configure macOS Access (OrbStack Users)
+
+**Important:** When accessing Harbor from macOS with OrbStack, use port-forward instead of direct domain access.
+
+#### Setup Port-Forward
 ```bash
-echo "Harbor12345" | docker login harbor.local -u admin --password-stdin
+# Start port-forward (keep this running in background)
+kubectl port-forward -n harbor deployment/harbor-core 9090:8080 &
 ```
 
-### 5. Test Push/Pull
+#### Configure Docker Insecure Registry
+```bash
+# Add localhost:9090 to insecure registries
+cat > ~/.orbstack/config/docker.json << 'EOF'
+{
+	"insecure-registries": ["harbor.local", "localhost:9090"]
+}
+EOF
+
+# Restart Docker
+orb restart docker
+```
+
+#### Docker Login
+```bash
+echo "Harbor12345" | docker login localhost:9090 -u admin --password-stdin
+```
+
+### 5. Test Push/Pull (macOS with OrbStack)
 ```bash
 # Tag and push an image
 docker pull busybox:latest
-docker tag busybox:latest harbor.local/library/busybox:test
-docker push harbor.local/library/busybox:test
+docker tag busybox:latest localhost:9090/library/busybox:test
+docker push localhost:9090/library/busybox:test
 
 # Pull the image
-docker pull harbor.local/library/busybox:test
+docker pull localhost:9090/library/busybox:test
+```
+
+### 6. Access from Within Kubernetes Cluster
+
+For pods running inside the cluster, use the service DNS name:
+```bash
+# Docker login from within cluster
+docker login harbor-core.harbor.svc.cluster.local -u admin -p Harbor12345
+
+# Or use the ingress domain (if DNS is configured)
+docker login harbor.local -u admin -p Harbor12345
 ```
 
 ## Access Harbor UI
@@ -80,3 +114,6 @@ kubectl delete namespace harbor
 
 ## Notes
 - Default storage class is used for persistent volumes
+- **macOS/OrbStack users:** Always use `kubectl port-forward` and `localhost:9090` for Docker operations
+- **In-cluster access:** Use service DNS `harbor-core.harbor.svc.cluster.local` or ingress domain `harbor.local`
+- Port-forward must be running during Docker push/pull operations
