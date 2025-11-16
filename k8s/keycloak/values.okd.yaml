@@ -51,16 +51,16 @@ resources:
     cpu: 500m
     memory: 1Gi
 
-# PostgreSQL configuration
+# PostgreSQL configuration - Use external PostgreSQL
 postgresql:
-  image:
-    registry: docker.io
-    repository: bitnamilegacy/postgresql
-  primary:
-    resources:
-      limits:
-        cpu: 500m
-        memory: 512Mi
-      requests:
-        cpu: 250m
-        memory: 256Mi
+  enabled: false  # Disable bundled PostgreSQL
+
+# External database configuration
+externalDatabase:
+  host: postgresql.thongdhse160015-dev.svc.cluster.local
+  port: 5432
+  user: bn_keycloak
+  database: bitnami_keycloak
+  password: "keycloak123"  # Must match the password in postgresql/values.okd.yaml
+  existingSecret: ""  # Leave empty to use password above
+  existingSecretPasswordKey: ""
