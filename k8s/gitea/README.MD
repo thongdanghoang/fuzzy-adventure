@@ -20,27 +20,28 @@ kubectl create secret generic gitea-admin-secret \
   --from-literal=username=gitea_admin \
   --from-literal=password='YOUR_ADMIN_PASSWORD' \
   --from-literal=email='gitea@local.domain' \
-  --namespace=default
+  --namespace=gitea
 ```
 
 #### OAuth Client Secret (Keycloak)
 ```bash
 kubectl create secret generic gitea-oauth-secret \
-  --from-literal=keycloak-client-secret='YOUR_KEYCLOAK_CLIENT_SECRET' \
-  --namespace=default
+  --from-literal=key='gitea' \
+  --from-literal=secret='YOUR_KEYCLOAK_CLIENT_SECRET' \
+  --namespace=gitea
 ```
 
 **Note**: Replace `YOUR_ADMIN_PASSWORD` and `YOUR_KEYCLOAK_CLIENT_SECRET` with actual values.
 
 ### 2. Verify Secrets
 ```bash
-kubectl get secrets -n default | grep gitea
+kubectl get secrets -n gitea | grep gitea
 ```
 
 Expected output:
 ```
 gitea-admin-secret           Opaque               3      10s
-gitea-oauth-secret           Opaque               1      8s
+gitea-oauth-secret           Opaque               2      8s
 ```
 
 ### 3. Install Gitea
@@ -63,8 +64,8 @@ kubectl delete namespace gitea
 
 ### Delete Secrets (if needed)
 ```bash
-kubectl delete secret gitea-admin-secret -n default
-kubectl delete secret gitea-oauth-secret -n default
+kubectl delete secret gitea-admin-secret -n gitea
+kubectl delete secret gitea-oauth-secret -n gitea
 ```
 
 ## Configuration
@@ -89,16 +90,16 @@ This approach ensures:
 
 ### Check if secrets exist
 ```bash
-kubectl describe secret gitea-admin-secret -n default
-kubectl describe secret gitea-oauth-secret -n default
+kubectl describe secret gitea-admin-secret -n gitea
+kubectl describe secret gitea-oauth-secret -n gitea
 ```
 
 ### View secret values (base64 encoded)
 ```bash
-kubectl get secret gitea-admin-secret -n default -o yaml
+kubectl get secret gitea-admin-secret -n gitea -o yaml
 ```
 
 ### Decode secret values
 ```bash
-kubectl get secret gitea-admin-secret -n default -o jsonpath='{.data.password}' | base64 -d
+kubectl get secret gitea-admin-secret -n gitea -o jsonpath='{.data.password}' | base64 -d
 ```
