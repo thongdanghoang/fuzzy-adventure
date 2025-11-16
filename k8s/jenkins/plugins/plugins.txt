@@ -68,3 +68,7 @@ workflow-multibranch:821.vc3b_4ea_780798
 workflow-scm-step:466.va_d69e602552b_
 workflow-step-api:710.v3e456cc85233
 workflow-support:1004.veee3a_d67cdb_9
+jquery3-api:3.7.1-619.vdb_10e002501a_
+echarts-api:6.0.0-1165.vd1283a_3e37d4
+checks-api:373.vfe7645102093
+junit:1369.v15da_00283f06

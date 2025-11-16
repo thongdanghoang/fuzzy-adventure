@@ -124,4 +124,4 @@ persistence:
   size: 10Gi
 
 agent:
-  jenkinsUrl: "https://jenkins.local/"
+  jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080/"
