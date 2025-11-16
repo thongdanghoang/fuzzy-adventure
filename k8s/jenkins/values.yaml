@@ -46,8 +46,6 @@ controller:
     - name: SONAR_TOKEN_ID
       value: "sonar-token-id"
     # Gitea
-    - name: GITEA_SERVER_URL
-      value: "https://gitea.local"
     - name: GITEA_AUTH_TOKEN
       valueFrom:
         secretKeyRef:
