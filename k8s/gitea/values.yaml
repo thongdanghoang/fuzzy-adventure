@@ -2,8 +2,6 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    cert-manager.io/cluster-issuer: "local-ca-issuer"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
@@ -11,10 +9,7 @@ ingress:
     - host: gitea.local
       paths:
         - path: /
-  tls:
-    - secretName: gitea-tls-secret
-      hosts:
-        - gitea.local
+  tls: []
 
 gitea:
   admin:
@@ -29,7 +24,7 @@ gitea:
 
 config:
   server:
-    ROOT_URL: "https://gitea.local"
+    ROOT_URL: "http://gitea.local"
     DOMAIN: "gitea.local"
     SSH_DOMAIN: "gitea.local"
   webhook:
@@ -47,13 +42,4 @@ postgresql-ha:
 postgresql:
   enabled: true
 
-extraVolumes:
-  - name: local-ca-volume
-    secret:
-      secretName: local-ca-trust
-
-extraContainerVolumeMounts:
-  - name: local-ca-volume
-    mountPath: /etc/ssl/certs/custom-ca.crt
-    subPath: ca.crt
-    readOnly: true
+# extraVolumes and extraContainerVolumeMounts removed as local CA trust is no longer needed
