@@ -1,6 +1,6 @@
 controller:
   image:
-    registry: "harbor.orb.local"
+    registry: "harbor-core.harbor.svc.cluster.local:80"
     repository: "library/jenkins"
     tag: "lts-jdk21"
     tagLabel: ""
@@ -13,9 +13,13 @@ controller:
     ingressClassName: "nginx"
     annotations:
       kubernetes.io/ingress.class: "nginx"
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
     path: /
     hostName: jenkins.local
+    tls:
+      - secretName: jenkins-tls-secret
+        hosts:
+          - jenkins.local
   installPlugins: []
   containerEnv:
     # Keycloak
@@ -121,4 +125,4 @@ persistence:
   size: 10Gi
 
 agent:
-  jenkinsUrl: "http://jenkins.local/"
+  jenkinsUrl: "https://jenkins.local/"
