@@ -41,5 +41,3 @@ postgresql-ha:
 
 postgresql:
   enabled: true
-
-# extraVolumes and extraContainerVolumeMounts removed as local CA trust is no longer needed

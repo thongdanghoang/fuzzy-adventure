@@ -86,6 +86,10 @@ This approach ensures:
 - ✅ Secrets are managed directly in Kubernetes
 - ✅ Same pattern as other services (e.g., Jenkins Harbor secret)
 
+## Access Information
+- Gitea is accessible via HTTP at: http://gitea.local
+- Ingress is enabled with nginx controller
+
 ## Troubleshooting
 
 ### Check if secrets exist
