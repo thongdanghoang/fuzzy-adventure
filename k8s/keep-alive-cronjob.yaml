@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: okd-keycloak-keepalive
+  namespace: default
+spec:
+  # Run every 5 minutes
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: curl
+            image: curlimages/curl:8.5.0
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "=== OKD Keep-Alive Started at $(date) ==="
+              
+              # 1. Ping Keycloak master realm (light DB query)
+              echo "[Keycloak] Pinging master realm..."
+              curl -f -s -o /dev/null -w "  Status: %{http_code}\n" \
+                https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/master || echo "  Failed"
+              
+              # 2. Ping Keycloak custom realm (triggers DB query for realm config)
+              echo "[Keycloak] Pinging thongdhse160015 realm..."
+              curl -f -s -o /dev/null -w "  Status: %{http_code}\n" \
+                https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/thongdhse160015 || echo "  Failed"
+              
+              # 3. Trigger database activity via admin console check
+              # This endpoint requires DB lookup and keeps PostgreSQL active
+              echo "[PostgreSQL] Triggering database activity via admin console..."
+              curl -f -s -o /dev/null -w "  Status: %{http_code}\n" \
+                https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/admin/master/console/ || echo "  Failed"
+              
+              # 4. Additional realm wellknown endpoint (ensures full DB connectivity)
+              echo "[PostgreSQL] Checking OIDC configuration (DB-intensive)..."
+              curl -f -s -o /dev/null -w "  Status: %{http_code}\n" \
+                https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/master/.well-known/openid-configuration || echo "  Failed"
+              
+              echo "=== Keep-Alive Completed at $(date) ==="
+          restartPolicy: OnFailure
