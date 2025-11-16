@@ -54,7 +54,7 @@ extraVolumeMounts:
 
 env:
   - name: SONAR_AUTH_SAML_CERTIFICATE_PATH
-    value: "/etc/sonarqube/saml/sonarqube-saml.crt"
+    value: "/etc/sonarqube/saml/certificate.pem"
 
 sonarProperties:
   sonar.core.serverBaseURL: "https://sonarqube-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com"
@@ -68,7 +68,7 @@ sonarProperties:
   sonar.auth.saml.user.email: "email"
   sonar.auth.saml.group: "groups"
   sonar.auth.saml.signRequests: "false"
-  sonar.auth.saml.certificate.path: "/etc/sonarqube/saml/sonarqube-saml.crt"
+  sonar.auth.saml.certificate.path: "/etc/sonarqube/saml/certificate.pem"
 
 monitoringPasscodeSecretName: "sonarqube-monitoring-passcode"
 monitoringPasscodeSecretKey: "passcode"
