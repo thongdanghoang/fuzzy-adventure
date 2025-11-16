@@ -1,0 +1,86 @@
+community:
+  enabled: true
+
+# OpenShift specific configuration
+OpenShift:
+  enabled: true
+  route:
+    enabled: true
+    host: "sonarqube-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com"
+    path: "/"
+    tls:
+      termination: edge
+    annotations: {}
+    wildcardPolicy: None
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+# Security context adjustments for OpenShift
+securityContext:
+  fsGroup: 1009130000
+
+containerSecurityContext:
+  runAsUser: 1009130000
+  runAsGroup: 1009130000
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop: ["ALL"]
+
+# Reduce resource requests to fit within quotas
+resources:
+  limits:
+    cpu: 800m
+    memory: 4096M
+    ephemeral-storage: 5Gi
+  requests:
+    cpu: 400m
+    memory: 2048M
+    ephemeral-storage: 2Gi
+
+extraVolumes:
+  - name: saml-cert
+    secret:
+      secretName: sonarqube-saml-cert
+
+extraVolumeMounts:
+  - name: saml-cert
+    mountPath: /etc/sonarqube/saml
+    readOnly: true
+
+env:
+  - name: SONAR_AUTH_SAML_CERTIFICATE_PATH
+    value: "/etc/sonarqube/saml/certificate.pem"
+
+sonarProperties:
+  sonar.core.serverBaseURL: "https://sonarqube-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com"
+  sonar.auth.saml.enabled: "true"
+  sonar.auth.saml.applicationId: "sonarqube"
+  sonar.auth.saml.providerName: "SAML"
+  sonar.auth.saml.providerId: "https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/thongdhse160015"
+  sonar.auth.saml.loginUrl: "https://keycloak-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/thongdhse160015/protocol/saml"
+  sonar.auth.saml.user.login: "login"
+  sonar.auth.saml.user.name: "name"
+  sonar.auth.saml.user.email: "email"
+  sonar.auth.saml.group: "groups"
+  sonar.auth.saml.signRequests: "false"
+  sonar.auth.saml.certificate.path: "/etc/sonarqube/saml/certificate.pem"
+
+monitoringPasscodeSecretName: "sonarqube-monitoring-passcode"
+monitoringPasscodeSecretKey: "passcode"
+
+# Disable the embedded PostgreSQL
+postgresql:
+  enabled: false
+
+# Configure external PostgreSQL database
+jdbcOverwrite:
+  enabled: true
+  jdbcUrl: "jdbc:postgresql://postgresql:5432/sonarqube"
+  jdbcUsername: "sonarqube"
+  jdbcSecretName: "sonarqube-postgresql"
+  jdbcSecretPasswordKey: "postgresql-password"
