@@ -41,7 +41,7 @@ docker pull harbor.local/library/busybox:test
 ```
 
 ## Access Harbor UI
-Open browser: http://harbor.local
+Open browser: https://harbor.local
 - Username: `admin`
 - Password: `Harbor12345` (or get from secret)
 
@@ -79,8 +79,4 @@ kubectl delete namespace harbor
 ```
 
 ## Notes
-- Harbor is configured for HTTP (no TLS) for local development
-- The registry uses `harbor.local` domain which works reliably with OrbStack
-- Domain `.local` may have conflicts with mDNS/Bonjour on macOS, so `.orb.local` is preferred
-- Make sure to add the domain to Docker's insecure registries list
 - Default storage class is used for persistent volumes
