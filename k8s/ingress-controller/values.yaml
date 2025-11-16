@@ -1,7 +1,3 @@
 controller:
   config:
     proxy-body-size: "0"
-  ingressClassResource:
-    name: nginx
-    enabled: true
-    default: true

@@ -1,0 +1,16 @@
+expose:
+  type: ingress
+  tls:
+    enabled: false
+  ingress:
+    hosts:
+      core: core.harbor.local
+    className: "nginx"
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+externalURL: http://core.harbor.local
+ipFamily:
+  ipv6:
+    enabled: false
