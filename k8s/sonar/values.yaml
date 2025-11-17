@@ -1,17 +1,6 @@
 community:
   enabled: true
 
-ingress:
-  enabled: true
-  hosts:
-    - name: sonarqube.local
-      path: /
-      pathType: Prefix
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  tls: []
-
 persistence:
   enabled: true
   size: 10Gi
