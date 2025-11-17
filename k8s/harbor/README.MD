@@ -81,7 +81,7 @@ Open browser: https://harbor.local
 
 ## Update Harbor
 ```bash
-helm upgrade harbor harbor/harbor -f values.yaml -n harbor
+helm upgrade harbor harbor/harbor -f values.default.yaml -n harbor
 ```
 
 ## Debug
