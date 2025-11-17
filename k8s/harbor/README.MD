@@ -1,5 +1,7 @@
 # Harbor Registry Setup
 
+> **Note:** This setup uses the default configuration from `values.default.yaml`. No custom `values.yaml` file is currently applied.
+
 ## Prerequisites
 - Kubernetes cluster (OrbStack/K3s/etc.)
 - Helm 3
@@ -15,8 +17,12 @@ helm repo update
 
 ### 2. Deploy Harbor
 ```bash
-helm install harbor harbor/harbor -f values.yaml -n harbor --create-namespace
+# The default configuration from values.default.yaml is applied
+helm install harbor harbor/harbor -f values.default.yaml -n harbor --create-namespace
 ```
+
+> **Note:** The `values.default.yaml` file contains the default configuration that is currently applied.
+> If you need to customize the installation, create a `values.yaml` file with your overrides.
 
 ### 3. Get Admin Password
 ```bash
@@ -81,8 +87,11 @@ Open browser: https://harbor.local
 
 ## Update Harbor
 ```bash
+# Using the default configuration
 helm upgrade harbor harbor/harbor -f values.default.yaml -n harbor
 ```
+
+> **Note:** If you have a custom `values.yaml` file, use that instead of `values.default.yaml`.
 
 ## Debug
 
