@@ -31,7 +31,7 @@ env:
     value: "/etc/sonarqube/saml/certificate.pem"
 
 sonarProperties:
-  sonar.core.serverBaseURL: "http://sonarqube.local"
+  sonar.core.serverBaseURL: "https://sonarqube.local"
   sonar.auth.saml.enabled: "true"
   sonar.auth.saml.applicationId: "sonarqube"
   sonar.auth.saml.providerName: "SAML"

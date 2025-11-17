@@ -37,7 +37,7 @@ controller:
           key: client-secret
     # SonarQube
     - name: SONAR_SERVER_URL
-      value: "https://sonarqube-thongdhse160015-dev.apps.rm3.7wse.p1.openshiftapps.com"
+      value: "http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000"
     - name: SONAR_AUTH_TOKEN
       valueFrom:
         secretKeyRef:
